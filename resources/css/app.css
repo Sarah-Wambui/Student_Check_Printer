@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+    --brand-teal: #226E72;
+    --brand-gold: #E7A94B;
+    --brand-gold-2: #C89541;
+    --brand-text: #243130;
+    --brand-white: #FFFFFF;
+    --brand-cream: #FBF5E9;
+    --brand-cream-2: #F8F2E6;
+    --brand-cream-3: #E7E2D7;
+}
