@@ -80,3 +80,13 @@ Route::prefix('user')->middleware(['auth', 'role:employee'])->group(function () 
     Route::get('/print/{check}', [UserCheckController::class, 'printCheck'])->name('user.checks.print');
     Route::get('/pdf/{check}', [UserCheckController::class, 'exportPdf'])->name('user.checks.pdf');
 });
+
+Route::get('/clear-cache', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+
+    return 'Cache cleared!';
+});
+
