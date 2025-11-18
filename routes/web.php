@@ -33,7 +33,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Dashboards
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth.token', 'role:admin'])->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -66,7 +66,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
 
 // Dashboards for Users
-Route::prefix('user')->middleware(['auth', 'role:employee'])->group(function () {
+Route::prefix('user')->middleware(['auth.token', 'role:employee'])->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
 
     Route::get('/checks/create', [UserDashboardController::class, 'createCheck'])->name('user.checks.create');
