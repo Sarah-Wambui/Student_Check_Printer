@@ -37,7 +37,7 @@ RUN npm run build   # creates public/build + manifest.json
 # ============================================
 FROM php:8.2-fpm
 
-RUN apt-get update && apt-get install -y nginx supervisor default-mysql-client \
+RUN apt-get update && apt-get install -y nginx supervisor \
     libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libcurl4-openssl-dev pkg-config \
     libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*

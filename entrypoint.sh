@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Wait for the database to be ready
-until mysqladmin ping -h"$DB_HOST" -u"$DB_USERNAME" -p"$DB_PASSWORD" --silent; do
+# Wait for database using PHP
+until php -r "new PDO('mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_DATABASE', '$DB_USERNAME', '$DB_PASSWORD');" >/dev/null 2>&1; do
     echo "Waiting for database..."
     sleep 2
 done
