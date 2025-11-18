@@ -66,5 +66,10 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 ENV PORT=8080
 EXPOSE 8080
 
-# Supervisor runs both PHP-FPM and Nginx
-CMD ["/usr/bin/supervisord"]
+# Copy entrypoint
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
