@@ -60,9 +60,15 @@ COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
+# --- NEW LINE FOR SESSION FIX ---
+# Ensure www-data can explicitly write to the sessions directory
+RUN mkdir -p /var/www/storage/framework/sessions \
+    && chown -R www-data:www-data /var/www/storage/framework/sessions \
+    && chmod -R 775 /var/www/storage/framework/sessions
+    
 ENV PORT=8080
 EXPOSE 8080
 
