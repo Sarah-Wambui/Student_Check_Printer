@@ -29,14 +29,16 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
+            dd(Auth::user());
+
             $user = Auth::user();
 
             // Redirect based on role
             if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+                return redirect()->intended(route('admin.dashboard'));
             }
 
-            return redirect()->route('user.dashboard');
+            return redirect()->intended(route('user.dashboard'));
         }
 
         throw ValidationException::withMessages([
