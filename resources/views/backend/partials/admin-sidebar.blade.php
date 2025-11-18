@@ -43,25 +43,5 @@
                <i class="las la-history mr-2"></i> Check History
             </a>
         </li>
-
-        <!-- Optional: Reports -->
-        <li>
-            <a href="{{ route('admin.reports') }}" 
-               class="block px-3 py-2 hover:bg-gray-800 rounded">
-               <i class="las la-chart-line mr-2"></i> Reports
-            </a>
-        </li>
-
-        <!-- Logout -->
-        <li class="pt-4 border-t border-gray-700 mt-4">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" 
-                        class="block w-full text-left px-3 py-2 hover:bg-gray-800 rounded">
-                    <i class="las la-sign-out-alt mr-2"></i> Logout
-                </button>
-            </form>
-        </li>
-
     </ul>
 </aside>
