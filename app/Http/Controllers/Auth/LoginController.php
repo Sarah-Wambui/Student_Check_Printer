@@ -31,6 +31,8 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
+            dd("LOGIN SUCCESS! Session ID is: " . session()->getId(), $user->role); // <-- ADD THIS LINE
+
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
