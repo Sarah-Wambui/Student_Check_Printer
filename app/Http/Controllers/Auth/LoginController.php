@@ -25,18 +25,9 @@ class LoginController extends Controller
 
         $remember = $request->has('remember');
 
-        // Dump input credentials (for debugging, never do this in public!)
-        dd([
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
-
-
         if (Auth::attempt($request->only('email', 'password'), $remember)) {
 
             $request->session()->regenerate();
-
-            dd(Auth::user());
 
             $user = Auth::user();
 
