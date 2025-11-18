@@ -22,7 +22,20 @@ RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --opti
 # Copy the rest of the app
 COPY . .
 
-# Stage 2: Production (Nginx + PHP-FPM)
+
+# ============================================
+# Stage 2: Node build (Tailwind + Vite)
+# ============================================
+FROM node:20 AS nodebuild
+
+WORKDIR /var/www
+
+COPY . .
+RUN npm install
+RUN npm run build        # 👈 THIS CREATES public/build + manifest.json
+
+
+# Stage 3: Production (Nginx + PHP-FPM)
 FROM php:8.2-fpm
 
 # Install Nginx and system dependencies
