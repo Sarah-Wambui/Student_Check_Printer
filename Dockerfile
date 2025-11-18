@@ -3,6 +3,9 @@
 # ============================================
 FROM php:8.2-fpm AS build
 
+# Add cache-busting argument at the very top
+ARG CACHEBUST=1
+
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libcurl4-openssl-dev pkg-config \
     libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
