@@ -25,12 +25,14 @@ class LoginController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        dd('USER FOUND', $user);
-        
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => 'The provided credentials do not match our records.',
-            ]);
+
+        // if (! $user || ! Hash::check($request->password, $user->password)) {
+        //     throw ValidationException::withMessages([
+        //         'email' => 'The provided credentials do not match our records.',
+        //     ]);
+        // }
+        if (! Hash::check($request->password, $user->password)) {
+            dd('Password does not match', $request->password, $user->password);
         }
 
         // Remove old tokens (optional)
