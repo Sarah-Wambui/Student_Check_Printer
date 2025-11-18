@@ -14,11 +14,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --optimize-autoloader
-
+# Copy full project first
 COPY . .
 
+# Install vendors
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # ============================================
 # Stage 2: Node build
