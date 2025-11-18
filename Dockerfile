@@ -1,30 +1,27 @@
-# Stage 1: Builder (Composer + Vendor install)
+# ============================================
+# Stage 1: Composer build
+# ============================================
 FROM php:8.2-fpm AS build
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libcurl4-openssl-dev pkg-config \
     libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql zip exif pcntl bcmath gd intl
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy composer files and install dependencies
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --optimize-autoloader
 
-# Copy the rest of the app
 COPY . .
 
 
 # ============================================
-# Stage 2: Node build (Tailwind + Vite)
+# Stage 2: Node build
 # ============================================
 FROM node:20 AS nodebuild
 
@@ -32,37 +29,42 @@ WORKDIR /var/www
 
 COPY . .
 RUN npm install
-RUN npm run build        # 👈 THIS CREATES public/build + manifest.json
+RUN npm run build   # creates public/build + manifest.json
 
 
-# Stage 3: Production (Nginx + PHP-FPM)
+# ============================================
+# Stage 3: Production — PHP + Nginx + Supervisor
+# ============================================
 FROM php:8.2-fpm
 
-# Install Nginx and system dependencies
-RUN apt-get update && apt-get install -y nginx \
+RUN apt-get update && apt-get install -y nginx supervisor \
     libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libcurl4-openssl-dev pkg-config \
     libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql zip exif pcntl bcmath gd intl
 
 WORKDIR /var/www
 
-# Copy app from build stage
+# Copy PHP app
 COPY --from=build /var/www /var/www
 
-# Remove default Nginx config and add your own
+# Copy Vite/Tailwind build output
+COPY --from=nodebuild /var/www/public/build /var/www/public/build
+
+# Nginx config
 RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Environment port from Railway
 ENV PORT=8080
 EXPOSE 8080
 
-# Start Nginx and PHP-FPM together
-CMD sed -i "s/\${PORT}/${PORT}/g" /etc/nginx/conf.d/default.conf && service nginx start && php-fpm
+# Supervisor runs both PHP-FPM and Nginx
+CMD ["/usr/bin/supervisord"]
