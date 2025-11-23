@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('company_id')->constrained('companies')->cascadeOnDelete();
-            $table->string('check_number')->unique();
+            $table->string('check_number')->unique()->nullable();
             $table->decimal('amount', 12, 2);
             $table->enum('status',['pending','printed'])->default('printed');
             $table->timestamp('printed_at')->nullable();

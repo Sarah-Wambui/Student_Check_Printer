@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Deposit;
+use App\Models\Check;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,6 +14,27 @@ class UserController extends Controller
     public function index()
     {
         $users = User::where('role', 'employee')->get();
+
+        // Add remaining deposit to each user
+        foreach ($users as $user) {
+
+            // Total deposits
+            $totalDeposits = Deposit::where('user_id', $user->id)->sum('Total');
+
+            // Total printed checks
+            $totalPrinted = Check::where('user_id', $user->id)->sum('amount');
+
+            // Remaining
+            $remaining = $totalDeposits - $totalPrinted;
+
+            if ($remaining < 0) {
+                $remaining = 0;
+            }
+
+            // Attach the value to the user object
+            $user->remaining_deposit = $remaining;
+        }
+
         return view('backend.admin.users.index', compact('users'));
     }
 
@@ -22,30 +45,107 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // Validate input
         $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:users,username',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'allowance_total' => 'required|numeric|min:0',
-            'allowance_remaining' => 'required|numeric|min:0',
+            'employee_id' => 'nullable|string',
+            'username' => 'nullable|string',
+            'time_clock_name' => 'nullable|string',
+            'legal_first_name' => 'nullable|string',
+            'legal_last_name' => 'nullable|string',
+            'hebrew_yiddish_name' => 'nullable|string',
+            'email' => 'nullable|email|unique:users,email',
+            'password' => 'nullable|string|min:8',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
+            'zip' => 'nullable|string',
+            'phone_home' => 'nullable|string',
+            'phone_cell' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'ssn' => 'nullable|string',
+            'leu_percent' => 'nullable|string',
+            'status_2025_26' => 'nullable|string',
+            'high_school' => 'nullable|string',
+            'hs_city_state' => 'nullable|string',
+            'hs_grad_date' => 'nullable|string',
+            'diploma_attached' => 'nullable|string',
+            'prev_bm1_name' => 'nullable|string',
+            'prev_bm1_city_state' => 'nullable|string',
+            'prev_bm1_dates' => 'nullable|string',
+            'prev_bm1_transcript' => 'nullable|string',
+            'prev_bm2_name' => 'nullable|string',
+            'prev_bm2_city_state' => 'nullable|string',
+            'prev_bm2_dates' => 'nullable|string',
+            'prev_bm2_transcript' => 'nullable|string',
+            'other_yeshivas' => 'nullable|string',
+            'date_enrolled_amidei' => 'nullable|string',
+            'level_admitted' => 'nullable|string',
+            'fathers_name' => 'nullable|string',
+            'father_in_law_name' => 'nullable|string',
+            'fil_address' => 'nullable|string',
+            'fil_phone' => 'nullable|string',
+            'chabira_farmitug' => 'nullable|string',
+            'chabira_nuchmitug' => 'nullable|string',
+            'location_kollel' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
+        // Create user
         User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => $request->password, // mutator will hash
-            'phone_number' => $request->phone_number,
+            'employee_id'          => $request->employee_id,
+            'username'             => $request->username,
+            'time_clock_name'      => $request->time_clock_name,
+            'legal_first_name'     => $request->legal_first_name,
+            'legal_last_name'      => $request->legal_last_name,
+            'hebrew_yiddish_name'  => $request->hebrew_yiddish_name,
+            'email'                => $request->email,
+            'password' => $request->password,  // hashed via mutator
             'role' => $request->role,
-            'allowance_total' => $request->allowance_total,
-            'allowance_remaining' => $request->allowance_remaining,
+            'is_suspended' => $request->has('is_suspended') ? true : false,
+            'address'              => $request->address,
+            'city'                 => $request->city,
+            'state'                => $request->state,
+            'zip'                  => $request->zip,
+            'phone_home'           => $request->phone_home,
+            'phone_cell'           => $request->phone_cell,
+            'dob'                  => $request->dob,
+            'ssn'                  => $request->ssn,
+            'leu_percent'          => $request->leu_percent,
+            'status_2025_26'       => $request->status_2025_26,
+            'high_school'          => $request->high_school,
+            'hs_city_state'        => $request->hs_city_state,
+            'hs_grad_date'         => $request->hs_grad_date,
+            'diploma_attached'     => $request->diploma_attached,
+
+            'prev_bm1_name'        => $request->prev_bm1_name,
+            'prev_bm1_city_state'  => $request->prev_bm1_city_state,
+            'prev_bm1_dates'       => $request->prev_bm1_dates,
+            'prev_bm1_transcript'  => $request->prev_bm1_transcript,
+
+            'prev_bm2_name'        => $request->prev_bm2_name,
+            'prev_bm2_city_state'  => $request->prev_bm2_city_state,
+            'prev_bm2_dates'       => $request->prev_bm2_dates,
+            'prev_bm2_transcript'  => $request->prev_bm2_transcript,
+
+            'other_yeshivas'       => $request->other_yeshivas,
+            'date_enrolled_amidei' => $request->date_enrolled_amidei,
+            'level_admitted'       => $request->level_admitted,
+
+            'fathers_name'         => $request->fathers_name,
+            'father_in_law_name'   => $request->father_in_law_name,
+            'fil_address'          => $request->fil_address,
+            'fil_phone'            => $request->fil_phone,
+
+            'chabira_farmitug'     => $request->chabira_farmitug,
+            'chabira_nuchmitug'    => $request->chabira_nuchmitug,
+
+            'location_kollel'      => $request->location_kollel,
+            'notes'                => $request->notes,
         ]);
 
 
-        return redirect()->route('admin.users')->with('success', 'User created.');
+        return redirect()->route('admin.users')->with('success', 'User created successfully.');
     }
-
      // Show edit form
     public function edit($id)
     {
@@ -54,40 +154,115 @@ class UserController extends Controller
     }
 
     // Update user
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
-
         // Validate input
         $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'employee_id' => 'nullable|string',
+            'username' => 'nullable|string',
+            'time_clock_name' => 'nullable|string',
+            'legal_first_name' => 'nullable|string',
+            'legal_last_name' => 'nullable|string',
+            'hebrew_yiddish_name' => 'nullable|string',
             'email' => 'nullable|email|unique:users,email,' . $user->id,
-            'phone_number' => 'nullable|string|max:20',
-            'role' => 'required|in:admin,employee',
-            'allowance_total' => 'required|numeric|min:0',
-            'allowance_remaining' => 'required|numeric|min:0',
-            'password' => 'nullable|string|min:6|confirmed', // Optional password field
+            'password' => 'nullable|string|min:8',
+            'role' => 'nullable|in:admin,employee',
+            'is_suspended' => 'nullable|boolean',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
+            'zip' => 'nullable|string',
+            'phone_home' => 'nullable|string',
+            'phone_cell' => 'nullable|string',
+            'dob' => 'nullable|date',
+            'ssn' => 'nullable|string',
+            'leu_percent' => 'nullable|string',
+            'status_2025_26' => 'nullable|string',
+            'high_school' => 'nullable|string',
+            'hs_city_state' => 'nullable|string',
+            'hs_grad_date' => 'nullable|string',
+            'diploma_attached' => 'nullable|string',
+            'prev_bm1_name' => 'nullable|string',
+            'prev_bm1_city_state' => 'nullable|string',
+            'prev_bm1_dates' => 'nullable|string',
+            'prev_bm1_transcript' => 'nullable|string',
+            'prev_bm2_name' => 'nullable|string',
+            'prev_bm2_city_state' => 'nullable|string',
+            'prev_bm2_dates' => 'nullable|string',
+            'prev_bm2_transcript' => 'nullable|string',
+            'other_yeshivas' => 'nullable|string',
+            'date_enrolled_amidei' => 'nullable|string',
+            'level_admitted' => 'nullable|string',
+            'fathers_name' => 'nullable|string',
+            'father_in_law_name' => 'nullable|string',
+            'fil_address' => 'nullable|string',
+            'fil_phone' => 'nullable|string',
+            'chabira_farmitug' => 'nullable|string',
+            'chabira_nuchmitug' => 'nullable|string',
+            'location_kollel' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
-        // Update user fields
-        $user->name = $request->name;
-        $user->username = $request->username;
-        $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
-        $user->role = $request->role;
-        $user->allowance_total = $request->allowance_total;
-        $user->allowance_remaining = $request->allowance_remaining;
+        // Update user
+        $user->employee_id         = $request->employee_id ?? $user->employee_id;
+        $user->username            = $request->username ?? $user->username;
+        $user->time_clock_name     = $request->time_clock_name ?? $user->time_clock_name;
+        $user->legal_first_name    = $request->legal_first_name ?? $user->legal_first_name;
+        $user->legal_last_name     = $request->legal_last_name ?? $user->legal_last_name;
+        $user->hebrew_yiddish_name = $request->hebrew_yiddish_name ?? $user->hebrew_yiddish_name;
+        $user->address             = $request->address ?? $user->address;
+        $user->email               = $request->email ?? $user->email;
+        $user->city                = $request->city ?? $user->city;
+        $user->state               = $request->state ?? $user->state;
+        $user->zip                 = $request->zip ?? $user->zip;
+        $user->phone_home          = $request->phone_home ?? $user->phone_home;
+        $user->phone_cell          = $request->phone_cell ?? $user->phone_cell;
+        $user->dob                 = $request->dob ?? $user->dob;
+        $user->ssn                 = $request->ssn ?? $user->ssn;
+        $user->leu_percent         = $request->leu_percent ?? $user->leu_percent;
+        $user->status_2025_26      = $request->status_2025_26 ?? $user->status_2025_26;
+        $user->high_school         = $request->high_school ?? $user->high_school;
+        $user->hs_city_state       = $request->hs_city_state ?? $user->hs_city_state;
+        $user->hs_grad_date        = $request->hs_grad_date ?? $user->hs_grad_date;
+        $user->diploma_attached    = $request->diploma_attached ?? $user->diploma_attached;
+        // Previous BM1
+        $user->prev_bm1_name       = $request->prev_bm1_name ?? $user->prev_bm1_name;
+        $user->prev_bm1_city_state = $request->prev_bm1_city_state ?? $user->prev_bm1_city_state;
+        $user->prev_bm1_dates      = $request->prev_bm1_dates ?? $user->prev_bm1_dates;
+        $user->prev_bm1_transcript = $request->prev_bm1_transcript ?? $user->prev_bm1_transcript;
+        // Previous BM2
+        $user->prev_bm2_name       = $request->prev_bm2_name ?? $user->prev_bm2_name;
+        $user->prev_bm2_city_state = $request->prev_bm2_city_state ?? $user->prev_bm2_city_state;
+        $user->prev_bm2_dates      = $request->prev_bm2_dates ?? $user->prev_bm2_dates;
+        $user->prev_bm2_transcript = $request->prev_bm2_transcript ?? $user->prev_bm2_transcript;
+        $user->other_yeshivas       = $request->other_yeshivas ?? $user->other_yeshivas;
+        $user->date_enrolled_amidei = $request->date_enrolled_amidei ?? $user->date_enrolled_amidei;
+        $user->level_admitted       = $request->level_admitted ?? $user->level_admitted;
+        $user->fathers_name         = $request->fathers_name ?? $user->fathers_name;
+        $user->father_in_law_name   = $request->father_in_law_name ?? $user->father_in_law_name;
+        $user->fil_address          = $request->fil_address ?? $user->fil_address;
+        $user->fil_phone            = $request->fil_phone ?? $user->fil_phone;
+        $user->chabira_farmitug     = $request->chabira_farmitug ?? $user->chabira_farmitug;
+        $user->chabira_nuchmitug    = $request->chabira_nuchmitug ?? $user->chabira_nuchmitug;
+        $user->location_kollel      = $request->location_kollel ?? $user->location_kollel;
+        $user->notes                = $request->notes ?? $user->notes;
 
-        // Update password if provided
+        // Role
+        $user->role = $request->role ?? $user->role;
+
+        // Suspension
+        $user->is_suspended = $request->has('is_suspended') ? true : false;
+
+         // Only update password if provided
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $user->password = $request->password; // Mutator will hash
         }
 
         $user->save();
 
         return redirect()->route('admin.users')->with('success', 'User updated successfully.');
     }
+
     public function destroy(User $user)
     {
         if ($user->role === 'admin') {

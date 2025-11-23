@@ -29,7 +29,7 @@
                                 Manage your budget and print checks securely all in one place
                             </p>
                             <div class="pt-4">
-                                <a href="/login" class="text-white text-lg font-bold py-6 px-10 rounded-md shadow-md transition-all">Login</a>
+                                <a href="/user/login" class="text-white text-lg font-bold py-6 px-10 rounded-md shadow-md transition-all">Login</a>
                             </div>
                         </div>
                         

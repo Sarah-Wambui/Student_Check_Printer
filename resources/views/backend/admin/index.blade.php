@@ -20,7 +20,7 @@
                 
                 <!-- Topbar -->
                 <header class="bg-white shadow-md w-full">
-                    @include('backend.partials.topbar')
+                    @include('backend.partials.admin-topbar')
                 </header>
 
                 <!-- Page Content -->

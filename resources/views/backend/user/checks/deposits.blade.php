@@ -5,31 +5,31 @@
     <h2 class="text-2xl font-bold mb-4">Deposits</h2>
 
     <div class="overflow-x-auto bg-white shadow rounded-lg">
-        <table class="min-w-full border border-gray-200">
-            <thead class="bg-gray-100 border-b">
+        <table class="w-full bg-white shadow rounded">
+            <thead class="bg-gray-200">
                 <tr>
-                    <th class="py-3 px-4 text-left font-semibold text-gray-600">ID</th>
-                    <th class="py-3 px-4 text-left font-semibold text-gray-600">Date</th>
-                    <th class="py-3 px-4 text-left font-semibold text-gray-600">Amount ($)</th>
+                    <th class="p-2 border">Name</th>
+                    <th class="p-2 border">Date</th>
+                    <th class="p-2 border">AM In</th>
+                    <th class="p-2 border">AM Out</th>
+                    <th class="p-2 border">PM In</th>
+                    <th class="p-2 border">PM Out</th>
+                    <th class="p-2 border">Total</th>
+                    
                 </tr>
             </thead>
-
             <tbody>
-                @forelse($deposits as $deposit)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-2 px-4">{{ $deposit->id }}</td>
-                        <td class="py-2 px-4">{{ $deposit->created_at->format('Y-m-d') }}</td>
-                        <td class="py-2 px-4 font-semibold">
-                            ${{ number_format($deposit->amount, 2) }}
-                        </td>
-                    </tr>
-                @empty
+                @foreach($deposits as $deposit)
                     <tr>
-                        <td colspan="3" class="py-4 text-center text-gray-500">
-                            No deposits found.
-                        </td>
+                        <td class="p-2 border text-center">{{ $deposit->user->Name }}</td>
+                        <td class="p-2 border text-center">{{ \Carbon\Carbon::parse($deposit->Date)->format('m/d/Y') }}</td>
+                        <td class="p-2 border text-center">{{ $deposit->AM_In ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->AM_In)->format('h:i A') : '' }}</td>
+                        <td class="p-2 border text-center">{{ $deposit->AM_Out ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->AM_Out)->format('h:i A') : '' }}</td>
+                        <td class="p-2 border text-center">{{ $deposit->PM_In ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->PM_In)->format('h:i A') : '' }}</td>
+                        <td class="p-2 border text-center">{{ $deposit->PM_Out ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->PM_Out)->format('h:i A') : '' }}</td>
+                        <td class="p-2 border text-center">${{ number_format($deposit->Total,2) }}</td>
                     </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

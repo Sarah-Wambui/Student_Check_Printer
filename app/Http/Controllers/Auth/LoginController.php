@@ -4,83 +4,90 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth; 
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
-use Carbon\Carbon;
 
 class LoginController extends Controller
 {
+    // Show login form
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('auth.login'); // Create this view
     }
 
+    // Handle login request
     public function login(Request $request)
     {
         $request->validate([
-            'email' => ['required','email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $remember = $request->has('remember');
 
+        if (Auth::attempt($request->only('email', 'password'), $remember)) {
 
-        // if (! $user || ! Hash::check($request->password, $user->password)) {
-        //     throw ValidationException::withMessages([
-        //         'email' => 'The provided credentials do not match our records.',
-        //     ]);
-        // }
-        if (! Hash::check($request->password, $user->password)) {
-            dd('Password does not match', $request->password, $user->password);
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Redirect based on role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('user.dashboard');
         }
 
-        // Remove old tokens (optional)
-        $user->tokens()->delete();
-
-        // Create token - set name to include user id or agent if you want
-        // lifetime: minutes (e.g. 60 * 24 * 7 = 10080 for 7 days)
-        $tokenResult = $user->createToken('web-login');
-        $plainTextToken = $tokenResult->plainTextToken;
-
-        // Set token in an HTTP-only cookie
-        $cookie = cookie(
-            'auth_token',
-            $plainTextToken,
-            60 * 24 * 7, // minutes -> here 7 days
-            '/',                // path
-            null,               // domain (null = default)
-            config('app.env') !== 'local', // secure: true in non-local
-            true,               // httpOnly
-            false,              // raw
-            'Lax'               // sameSite (Lax is usually fine)
-        );
-
-        // Redirect to the intended dashboard based on role
-        $redirect = $user->role === 'admin'
-            ? route('admin.dashboard')
-            : route('user.dashboard');
-
-        return redirect()->intended($redirect)->withCookie($cookie);
+        throw ValidationException::withMessages([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
-    public function logout(Request $request)
+    public function showEmployeeLoginForm()
     {
-        // get token from cookie
-        $token = $request->cookie('auth_token');
+        return view('auth.userlogin');
+    }
 
-        if ($token) {
-            // delete token (PersonalAccessToken::findToken)
-            $request->user()?->currentAccessToken()?->delete();
 
-            // also delete any matching token by value (if user not authenticated yet)
-            \Laravel\Sanctum\PersonalAccessToken::findToken($token)?->delete();
+    public function employeeLogin(Request $request)
+    {
+        $request->validate([
+            'phone_cell' => ['required'],
+            'password' => ['required'],
+        ]);
+
+        // Attempt login using phone_number
+        if (Auth::attempt($request->only('phone_cell', 'password'))) {
+
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Ensure only employees use this login
+            if ($user->role !== 'employee') {
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'phone_number' => 'You are not authorized to log in here.',
+                ]);
+            }
+
+            return redirect()->route('user.dashboard');
         }
 
-        // remove cookie
-        $forget = cookie()->forget('auth_token');
+        throw ValidationException::withMessages([
+            'phone_number' => 'The provided credentials do not match our records.',
+        ]);
+    }
 
-        // normal redirect to login
-        return redirect('/login')->withCookie($forget);
+    // Logout user
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
     }
 }

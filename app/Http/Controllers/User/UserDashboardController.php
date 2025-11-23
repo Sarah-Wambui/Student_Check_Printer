@@ -15,11 +15,38 @@ class UserDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Total checks printed
+        $total_checks = Check::where('user_id', $user->id)->count();
+
+        // Total amount printed
+        $total_amount_printed = Check::where('user_id', $user->id)->sum('amount');
+
+        // Pending checks
+        $pending_checks = Check::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->count();
+
+
+        // Step 1: Get total deposits from deposits table
+        $totalDeposits = Deposit::where('user_id', $user->id)->sum('Total');
+
+        // Step 2: Get total amount of printed checks
+        $totalPrinted = Check::where('user_id', $user->id)->sum('amount');
+
+        // Step 3: Calculate remaining allowance
+        $remaining_deposit = $totalDeposits - $totalPrinted;
+
+
+        if ($remaining_deposit < 0) $remaining_deposit = 0;
+
         $stats = [
-            'total_checks' => Check::where('user_id', $user->id)->count(),
-            'total_amount' => Check::where('user_id', $user->id)->sum('amount'),
-            'pending_checks' => Check::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'total_checks' => $total_checks,
+            'total_amount' => $total_amount_printed,
+            'pending_checks' => $pending_checks,
+            'remaining_deposit' => $remaining_deposit,
         ];
+
         return view('backend.user.dashboard', compact('stats'));
     }
 
@@ -34,40 +61,55 @@ class UserDashboardController extends Controller
     // Store Printed Check
     public function storeCheck(Request $request)
     {
-        // Validate input
-        $request->validate([
-            'company_id' => 'required|exists:companies,id',
-            'amount' => 'required|numeric|min:50',
-        ]);
-
         $user = Auth::user();
 
-        // Ensure user has enough allowance
-        if ($request->amount > $user->allowance_remaining) {
-            return back()->withErrors(['amount' => 'Amount exceeds remaining allowance']);
+        // Check if the user account is suspended
+        if ($user->is_suspended) {
+            return redirect()->back()->with('error', 'Your account is suspended. Please contact the admin.');
         }
 
-        // Generate a check number
-        $checkNumber = 'CK' . time();
+        // Validate the input
+        $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'amount' => 'required|numeric|min:50', // ensures amount >= 50
+        ]);
 
-        // Create the check
-        $check = \App\Models\Check::create([
+        // Step 1: Get total deposits from deposits table
+        $totalDeposits = Deposit::where('user_id', $user->id)->sum('Total');
+
+        // Step 2: Get total amount of printed checks
+        $totalPrinted = Check::where('user_id', $user->id)->sum('amount');
+
+        // Step 3: Calculate remaining allowance
+        $remainingAllowance = $totalDeposits - $totalPrinted;
+
+        if ($request->amount > $remainingAllowance) {
+            return back()->withErrors([
+                'amount' => 'Amount exceeds your remaining allowance of $' . number_format($remainingAllowance, 2)
+            ])->withInput();
+        }
+
+        // Step 4: Create the check WITHOUT the check_number
+        $check = Check::create([
             'user_id' => $user->id,
             'company_id' => $request->company_id,
-            'check_number' => $checkNumber,
             'amount' => $request->amount,
             'status' => 'printed',
             'printed_at' => now(),
         ]);
 
-        // Deduct allowance
-        $user->allowance_remaining -= $request->amount;
-        $user->save();
+        // Step 5: Generate the check number starting at 1015
+        $checkNumber = 1015 + $check->id - 1;
 
-        // Redirect directly to the print view
-        return redirect()->route('user.checks.print', $check->id);
+        // Step 6: Update the check with the check number
+        $check->update([
+            'check_number' => str_pad($checkNumber, 7, '0', STR_PAD_LEFT)
+        ]);
+
+        // Redirect to print page
+        return redirect()->route('user.checks.print', $check->id)
+                        ->with('success', 'Check printed successfully.');
     }
-
 
     // Check History
     public function history()
@@ -86,7 +128,8 @@ class UserDashboardController extends Controller
     // Deposits (Read-only)
     public function deposits()
     {
-        $deposits = Deposit::all(); // Assuming a Deposit model
+        $user = Auth::user(); // current logged-in user
+        $deposits = Deposit::where('user_id', $user->id)->get();
         return view('backend.user.checks.deposits', compact('deposits'));
     }
 }

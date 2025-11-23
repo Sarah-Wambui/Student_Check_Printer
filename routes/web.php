@@ -11,6 +11,10 @@ use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DepositController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\CheckController as AdminCheckController; 
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\DepositImportController;
+use App\Http\Controllers\Auth\PasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,11 +33,18 @@ Route::get('/login', [LoginController::class, 'showLoginForm']);
 // Handle login
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
+// Employee login page
+Route::get('/user/login', [LoginController::class, 'showEmployeeLoginForm'])->name('employee.login');
+
+// Employee login submit
+Route::post('/user/login', [LoginController::class, 'employeeLogin'])->name('employee.login.submit');
+
+
 // Handle logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Dashboards
-Route::prefix('admin')->middleware(['auth.token', 'role:admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -43,6 +54,8 @@ Route::prefix('admin')->middleware(['auth.token', 'role:admin'])->group(function
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/users/import', [ImportController::class, 'import'])->name('users.import');
+
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('admin.companies');
     Route::get('/companies/create', [CompanyController::class, 'create'])->name('admin.companies.create');
@@ -58,6 +71,10 @@ Route::prefix('admin')->middleware(['auth.token', 'role:admin'])->group(function
     Route::put('/deposits/{deposit}', [DepositController::class, 'update'])->name('admin.deposits.update');
     Route::delete('/deposits/{deposit}', [DepositController::class, 'destroy'])->name('admin.deposits.destroy');
 
+    Route::get('/deposits/import', [DepositImportController::class, 'showImportForm'])->name('deposits.import.form');
+    Route::post('/deposits/import', [DepositImportController::class, 'importDeposits'])->name('deposits.import');
+
+
     Route::get('/checks/history', [AdminCheckController::class, 'index'])->name('admin.checks.history');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
@@ -66,7 +83,7 @@ Route::prefix('admin')->middleware(['auth.token', 'role:admin'])->group(function
 
 
 // Dashboards for Users
-Route::prefix('user')->middleware(['auth.token', 'role:employee'])->group(function () {
+Route::prefix('user')->middleware(['auth', 'role:employee'])->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
 
     Route::get('/checks/create', [UserDashboardController::class, 'createCheck'])->name('user.checks.create');
@@ -78,15 +95,9 @@ Route::prefix('user')->middleware(['auth.token', 'role:employee'])->group(functi
     Route::get('/deposits', [UserDashboardController::class, 'deposits'])->name('user.deposits');
     
     Route::get('/print/{check}', [UserCheckController::class, 'printCheck'])->name('user.checks.print');
-    Route::get('/pdf/{check}', [UserCheckController::class, 'exportPdf'])->name('user.checks.pdf');
+    Route::get('/pdf/{check}', [CheckController::class, 'exportPdf'])->name('user.checks.pdf');
+
+    Route::get('/password', [PasswordController::class, 'edit'])->name('password.edit');
+    Route::post('/password', [PasswordController::class, 'update'])->name('password.update');
+
 });
-
-Route::get('/clear-cache', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-
-    return 'Cache cleared!';
-});
-

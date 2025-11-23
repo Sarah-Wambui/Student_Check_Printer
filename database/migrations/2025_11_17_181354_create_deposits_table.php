@@ -13,12 +13,27 @@ return new class extends Migration
     {
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('amount', 12, 2);
-            $table->string('note')->nullable();
+
+            // Keep relationship to users
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            // Also keep a plain name column for the sheet import
+            $table->string('Name');
+
+            // Attendance fields
+            $table->date('Date')->nullable();
+            $table->time('AM_In')->nullable();
+            $table->time('AM_Out')->nullable();
+            $table->time('PM_In')->nullable();
+            $table->time('PM_Out')->nullable();
+
+            // Total column
+            $table->decimal('Total', 12, 2)->nullable();
+
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

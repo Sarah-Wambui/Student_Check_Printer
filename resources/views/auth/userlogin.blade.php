@@ -30,17 +30,19 @@
 
 </head>
 <body class="bg-gray-100">
-    <form method="POST" action="{{ route('login') }}" class="max-w-lg mx-auto mt-20 p-6 bg-white rounded-lg shadow-md">
+    <form method="POST" action="{{ route('employee.login.submit') }}" class="max-w-lg mx-auto mt-20 p-6 bg-white rounded-lg shadow-md">
         @csrf
         <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
         
-        <!-- Email -->
-        <label for="email" class="block text-lg font-medium text-gray-700">Email:</label>
-        <input type="email" name="email" id="email" class="mt-1 w-full focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0" required>
+         <!-- Phone Number -->
+        <label for="phone_cell" class="block text-lg font-medium text-gray-700">Phone Number:</label>
+        <input type="text" name="phone_cell" id="phone_cell" class="mt-1 w-full focus:outline-none focus:ring-1 focus:ring-indigo-500 rounded-md" required>
+
 
         <!-- Password -->
         <label for="password" class="mt-4 block text-lg font-medium text-gray-700">Password:</label>
         <input type="password" name="password" id="password" class="mt-1 w-full focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0" required >
+
 
         <!-- Submit button -->
         <button  type="submit"  class="mt-6 w-full py-2 px-4 text-lg  text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

@@ -14,10 +14,10 @@ class AdminDashboardController extends Controller
     public function index()
 {
     return view('backend.admin.dashboard', [
-        'totalDeposits' => Deposit::sum('amount'),
+        'totalDeposits' => Deposit::sum('Total'),
         'totalChecks' => Check::count(),
         'totalAmountPrinted' => Check::sum('amount'),
-        'systemBalance' => Deposit::sum('amount') - Check::sum('amount'),
+        'systemBalance' => Deposit::sum('Total') - Check::sum('amount'),
         'totalEmployees' => User::where('role', 'employee')->count(),
         'totalCompanies' => Company::count(),
         'recentChecks' => Check::latest()->take(5)->get(),
