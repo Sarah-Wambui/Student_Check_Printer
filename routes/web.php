@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CheckController as AdminCheckController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\DepositImportController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\User\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,6 +97,9 @@ Route::prefix('user')->middleware(['auth', 'role:employee'])->group(function () 
     
     Route::get('/print/{check}', [UserCheckController::class, 'printCheck'])->name('user.checks.print');
     Route::get('/pdf/{check}', [CheckController::class, 'exportPdf'])->name('user.checks.pdf');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/password', [PasswordController::class, 'edit'])->name('password.edit');
     Route::post('/password', [PasswordController::class, 'update'])->name('password.update');

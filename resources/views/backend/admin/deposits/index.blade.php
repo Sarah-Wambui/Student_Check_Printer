@@ -22,7 +22,7 @@
     <tbody>
         @foreach($deposits as $deposit)
             <tr>
-                <td class="p-2 border text-center">{{ $deposit->user->Name }}</td>
+                <td class="p-2 border text-center">{{ $deposit->user->time_clock_name}}</td>
                 <td class="p-2 border text-center">{{ \Carbon\Carbon::parse($deposit->Date)->format('m/d/Y') }}</td>
                 <td class="p-2 border text-center">{{ $deposit->AM_In ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->AM_In)->format('h:i A') : '' }}</td>
                 <td class="p-2 border text-center">{{ $deposit->AM_Out ? \Carbon\Carbon::createFromFormat('H:i:s', $deposit->AM_Out)->format('h:i A') : '' }}</td>

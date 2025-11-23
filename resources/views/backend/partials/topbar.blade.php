@@ -19,7 +19,7 @@
         @click="open = !open"
         class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
-        <span class="font-medium text-gray-700">{{ Auth::user()->Name }}</span>
+        <span class="font-medium text-gray-700">{{ Auth::user()->time_clock_name }}</span>
         <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
@@ -32,6 +32,11 @@
         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
         style="display: none;"
       >
+      <li>
+          <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <i class="me-1 las la-cog"></i> Profile Settings
+          </a>
+        </li>
         <li>
           <a href="{{ route('password.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
             <i class="me-1 las la-lock"></i> Change Password
