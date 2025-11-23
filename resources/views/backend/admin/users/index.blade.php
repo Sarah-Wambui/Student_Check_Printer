@@ -3,46 +3,127 @@
 @section('content')
 <h1 class="text-3xl font-bold mb-6">Users</h1>
 
-<a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Add User</a>
+<a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">
+    Add User
+</a>
 
-<table class="w-full bg-white shadow rounded">
-    <thead class="bg-gray-200">
-        <tr>
-            <th class="p-2 border">ID</th>   
-            <th class="p-2 border">Name</th>          
-            <th class="p-2 border">Phone Number</th>
-            <th class="p-2 border">City</th>
-            <th class="p-2 border">Remaining Deposit</th>
-            <th class="p-2 border">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($users as $user)
+<!-- Horizontal Scroll -->
+<div class="overflow-x-auto">
+    <table class="min-w-max w-full bg-white shadow rounded">
+        <thead class="bg-gray-200 whitespace-nowrap">
             <tr>
-                <td class="p-2 border text-center">{{ $user->employee_id}}</td>
-                <td class="p-2 border text-center">{{ $user->time_clock_name }}</td>
-                <td class="p-2 border text-center">{{ $user->phone_cell }}</td>
-                <td class="p-2 border text-center">{{ $user->city }}</td>
-                <td class="p-2 border text-center">${{ number_format($user->remaining_deposit) }}</td>
-                <td class="p-2 border flex space-x-4 justify-center">
-                    <!-- Edit Button (Pen SVG) -->
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="bg-blue-500 text-white p-2 rounded hover:bg-yellow-600" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 21h8m.174-14.188a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
-                    </a>
+                <th class="p-2 border">ID</th>
+                <th class="p-2 border">Name</th>
+                <th class="p-2 border">Phone Cell</th>
+                <th class="p-2 border">City</th>
+                <th class="p-2 border">Remaining Deposit</th>
+                <th class="p-2 border">Actions</th>
 
-                    <!-- Delete Button (Trash SVG) -->
-                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-red-600" title="Delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
-                        </button>
-                    </form>
-                </td>
-
+                <!-- All other fields -->
+                <th class="p-2 border">Username</th>
+                <th class="p-2 border">Legal First Name</th>
+                <th class="p-2 border">Legal Last Name</th>
+                <th class="p-2 border">Hebrew/Yiddish Name</th>
+                <th class="p-2 border">Email</th>
+                <th class="p-2 border">Password</th>
+                <th class="p-2 border">Role</th>
+                <th class="p-2 border">Suspended</th>
+                <th class="p-2 border">Address</th>
+                <th class="p-2 border">State</th>
+                <th class="p-2 border">ZIP</th>
+                <th class="p-2 border">Phone Home</th>
+                <th class="p-2 border">DOB</th>
+                <th class="p-2 border">SSN</th>
+                <th class="p-2 border">LEU Percent</th>
+                <th class="p-2 border">Status 2025/26</th>
+                <th class="p-2 border">High School</th>
+                <th class="p-2 border">HS City/State</th>
+                <th class="p-2 border">HS Grad Date</th>
+                <th class="p-2 border">Diploma Attached</th>
+                <th class="p-2 border">Prev BM1 Name</th>
+                <th class="p-2 border">Prev BM1 City/State</th>
+                <th class="p-2 border">Prev BM1 Dates</th>
+                <th class="p-2 border">Prev BM1 Transcript</th>
+                <th class="p-2 border">Prev BM2 Name</th>
+                <th class="p-2 border">Prev BM2 City/State</th>
+                <th class="p-2 border">Prev BM2 Dates</th>
+                <th class="p-2 border">Prev BM2 Transcript</th>
+                <th class="p-2 border">Other Yeshivas</th>
+                <th class="p-2 border">Date Enrolled Amidei</th>
+                <th class="p-2 border">Level Admitted</th>
+                <th class="p-2 border">Father's Name</th>
+                <th class="p-2 border">Father-in-law Name</th>
+                <th class="p-2 border">FIL Address</th>
+                <th class="p-2 border">FIL Phone</th>
+                <th class="p-2 border">Chabira Farmitug</th>
+                <th class="p-2 border">Chabira Nuchmitug</th>
+                <th class="p-2 border">Location Kollel</th>
+                <th class="p-2 border">Notes</th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </thead>
 
+        <tbody class="whitespace-nowrap">
+            @foreach($users as $user)
+                <tr class="hover:bg-gray-100">
+                    <td class="p-2 border text-center">{{ $user->employee_id }}</td>
+                    <td class="p-2 border text-center">{{ $user->time_clock_name }}</td>
+                    <td class="p-2 border text-center">{{ $user->phone_cell }}</td>
+                    <td class="p-2 border text-center">{{ $user->city }}</td>
+                    <td class="p-2 border text-center">${{ number_format($user->remaining_deposit) }}</td>
+
+                    <!-- Actions -->
+                    <td class="p-2 border flex space-x-4 justify-center">
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="bg-blue-500 text-white p-2 rounded hover:bg-yellow-600" title="Edit">✏️</a>
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 text-white p-2 rounded hover:bg-red-600" title="Delete">🗑️</button>
+                        </form>
+                    </td>
+
+                    <!-- Remaining Fields -->
+                    <td class="p-2 border">{{ $user->username }}</td>
+                    <td class="p-2 border">{{ $user->legal_first_name }}</td>
+                    <td class="p-2 border">{{ $user->legal_last_name }}</td>
+                    <td class="p-2 border">{{ $user->hebrew_yiddish_name }}</td>
+                    <td class="p-2 border">{{ $user->email }}</td>
+                    <td class="p-2 border">••••••••</td>
+                    <td class="p-2 border">{{ ucfirst($user->role) }}</td>
+                    <td class="p-2 border text-center">{{ $user->is_suspended ? 'Yes' : 'No' }}</td>
+                    <td class="p-2 border">{{ $user->address }}</td>
+                    <td class="p-2 border">{{ $user->state }}</td>
+                    <td class="p-2 border">{{ $user->zip }}</td>
+                    <td class="p-2 border">{{ $user->phone_home }}</td>
+                    <td class="p-2 border">{{ $user->dob }}</td>
+                    <td class="p-2 border">{{ $user->ssn }}</td>
+                    <td class="p-2 border">{{ $user->leu_percent }}</td>
+                    <td class="p-2 border">{{ $user->status_2025_26 }}</td>
+                    <td class="p-2 border">{{ $user->high_school }}</td>
+                    <td class="p-2 border">{{ $user->hs_city_state }}</td>
+                    <td class="p-2 border">{{ $user->hs_grad_date }}</td>
+                    <td class="p-2 border">{{ $user->diploma_attached }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm1_name }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm1_city_state }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm1_dates }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm1_transcript }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm2_name }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm2_city_state }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm2_dates }}</td>
+                    <td class="p-2 border">{{ $user->prev_bm2_transcript }}</td>
+                    <td class="p-2 border">{{ $user->other_yeshivas }}</td>
+                    <td class="p-2 border">{{ $user->date_enrolled_amidei }}</td>
+                    <td class="p-2 border">{{ $user->level_admitted }}</td>
+                    <td class="p-2 border">{{ $user->fathers_name }}</td>
+                    <td class="p-2 border">{{ $user->father_in_law_name }}</td>
+                    <td class="p-2 border">{{ $user->fil_address }}</td>
+                    <td class="p-2 border">{{ $user->fil_phone }}</td>
+                    <td class="p-2 border">{{ $user->chabira_farmitug }}</td>
+                    <td class="p-2 border">{{ $user->chabira_nuchmitug }}</td>
+                    <td class="p-2 border">{{ $user->location_kollel }}</td>
+                    <td class="p-2 border">{{ $user->notes }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 @endsection

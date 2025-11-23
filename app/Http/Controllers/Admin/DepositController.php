@@ -41,7 +41,7 @@ class DepositController extends Controller
 
         Deposit::create([
             'user_id' => $request->user_id,
-            'Name' => $user->Name,
+            'Name' => $user->time_clock_name,
             'Date' => $request->Date,
             'AM_In' => $request->AM_In,
             'AM_Out' => $request->AM_Out,

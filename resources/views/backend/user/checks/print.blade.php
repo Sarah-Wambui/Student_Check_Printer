@@ -23,7 +23,7 @@
             letter-spacing: 0.01in;   /* maintain 1/8" spacing */
             white-space: nowrap;
             position: absolute;
-            bottom: 0.1in;           /* adjust vertical position */
+            bottom: 0.3in;           /* adjust vertical position */
             left: 50%;                /* center horizontally */
             transform: translateX(-50%); /* true horizontal centering */
             text-align: center;

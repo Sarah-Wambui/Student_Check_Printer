@@ -34,9 +34,9 @@
         @csrf
         <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
         
-         <!-- Phone Number -->
-        <label for="phone_cell" class="block text-lg font-medium text-gray-700">Phone Number:</label>
-        <input type="text" name="phone_cell" id="phone_cell" class="mt-1 w-full focus:outline-none focus:ring-1 focus:ring-indigo-500 rounded-md" required>
+         <!-- Employee ID -->
+        <label for="employee_id" class="block text-lg font-medium text-gray-700">Employee ID:</label>
+        <input type="text" name="employee_id" id="employee_id" class="mt-1 w-full focus:outline-none focus:ring-1 focus:ring-indigo-500 rounded-md" required>
 
 
         <!-- Password -->

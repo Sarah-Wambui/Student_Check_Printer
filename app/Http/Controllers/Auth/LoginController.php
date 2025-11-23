@@ -53,12 +53,12 @@ class LoginController extends Controller
     public function employeeLogin(Request $request)
     {
         $request->validate([
-            'phone_cell' => ['required'],
+            'employee_id' => ['required'],
             'password' => ['required'],
         ]);
 
         // Attempt login using phone_number
-        if (Auth::attempt($request->only('phone_cell', 'password'))) {
+        if (Auth::attempt($request->only('employee_id', 'password'))) {
 
             $request->session()->regenerate();
 
@@ -68,7 +68,7 @@ class LoginController extends Controller
             if ($user->role !== 'employee') {
                 Auth::logout();
                 throw ValidationException::withMessages([
-                    'phone_number' => 'You are not authorized to log in here.',
+                    'employee_id' => 'You are not authorized to log in here.',
                 ]);
             }
 
@@ -76,7 +76,7 @@ class LoginController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'phone_number' => 'The provided credentials do not match our records.',
+            'employee_id' => 'The provided credentials do not match our records.',
         ]);
     }
 

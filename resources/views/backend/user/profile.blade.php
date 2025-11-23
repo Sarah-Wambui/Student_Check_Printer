@@ -20,28 +20,24 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-1">Role</label>
-                <input type="text" value="{{ ucfirst($user->role) }}" class="w-full p-2 border rounded bg-gray-100" readonly>
+                <label class="block text-gray-700 font-medium mb-1">Employee ID</label>
+                <input type="text" name="employee_id" value="{{ old('employee_id', $user->employee_id) }}" class="w-full p-2 border rounded bg-gray-100" readonly>
             </div>
-        </div>
-
-        <div class="mb-4">
-            <label class="inline-flex items-center">
-                <input type="checkbox" class="form-checkbox" {{ $user->is_suspended ? 'checked' : '' }} disabled>
-                <span class="ml-2">Account Suspended</span>
-            </label>
         </div>
 
         <!-- Editable Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-1">Employee ID</label>
-                <input type="text" name="employee_id" value="{{ old('employee_id', $user->employee_id) }}" class="w-full p-2 border rounded">
-            </div>
-
-            <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-1">Username</label>
-                <input type="text" name="username" value="{{ old('username', $user->username) }}" class="w-full p-2 border rounded">
+                <input type="text" name="username" value="{{ old('username', $user->username) }}" class="w-full p-2 border rounded bg-gray-100" readonly>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-1">Status</label>
+                <input type="text" name="status" value="{{ old('status', $user->status_2025_26) }}" class="w-full p-2 border rounded bg-gray-100" readonly>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium mb-1">LEU Percent</label>
+                <input type="text" name="leu_percent" value="{{ old('leu_percent', $user->leu_percent) }}" class="w-full p-2 border rounded bg-gray-100" readonly>
             </div>
 
             <div class="mb-4">

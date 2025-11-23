@@ -26,7 +26,7 @@
             <option value="">-- Choose User --</option>
             @foreach($users as $user)
                 <option value="{{ $user->id }}">
-                    {{ $user->Name }} @if($user->email) ({{ $user->email }}) @endif
+                    {{ $user->Name }} @if($user->time_clock_name) ({{ $user->time_clock_name }}) @endif
                 </option>
             @endforeach
         </select>

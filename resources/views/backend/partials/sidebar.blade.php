@@ -1,5 +1,5 @@
 <!-- User Sidebar -->
-<aside class="w-64 bg-gray-900 text-gray-200 min-h-screen p-4">
+<aside id="sidebar" class="w-64 bg-gray-900 text-gray-200 min-h-screen p-4">
     <h2 class="text-xl font-bold mb-6">Cheque Printer</h2>
 
     <ul class="space-y-3">

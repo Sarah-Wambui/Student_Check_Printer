@@ -59,7 +59,7 @@ class ProfileController extends Controller
         ]);
 
         // Update fields
-        $user->fill($request->except(['time_clock_name', 'role', 'is_suspended']));
+        $user->fill($request->except(['time_clock_name', 'role', 'is_suspended','username', 'employee_id', 'status_2025_26', 'leu_percent']));
 
         // Update password if provided
         if ($request->filled('password')) {
