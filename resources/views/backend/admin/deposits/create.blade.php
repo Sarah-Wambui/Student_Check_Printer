@@ -4,6 +4,15 @@
 <div class="container mx-auto max-w-lg">
     <h2 class="text-2xl font-bold mb-6">Add New Deposit</h2>
 
+    <!-- Upload Progress Bar -->
+    <div id="uploadContainer" class="hidden mt-4">
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div id="uploadBar" class="bg-blue-600 h-4 w-0 transition-all duration-300"></div>
+        </div>
+        <p id="uploadStatus" class="mt-2 text-sm font-medium text-gray-700"></p>
+    </div>
+
+
     <form action="{{ route('deposits.import') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-4">
@@ -100,7 +109,48 @@
         Add Deposit
     </button>
 </form>
-
-
 </div>
-@endsection
+
+<script>
+document.querySelector("form[action='{{ route('deposits.import') }}']").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let form = this;
+    let formData = new FormData(form);
+
+    let uploadContainer = document.getElementById("uploadContainer");
+    let uploadBar = document.getElementById("uploadBar");
+    let uploadStatus = document.getElementById("uploadStatus");
+
+    uploadContainer.classList.remove("hidden");
+    uploadBar.style.width = "0%";
+    uploadStatus.textContent = "Starting upload...";
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", form.action);
+
+    xhr.upload.addEventListener("progress", function(e) {
+        if (e.lengthComputable) {
+            let percent = Math.round((e.loaded / e.total) * 100);
+            uploadBar.style.width = percent + "%";
+            uploadStatus.textContent = "Uploading: " + percent + "%";
+        }
+    });
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            uploadBar.style.width = "100%";
+            uploadStatus.textContent = "Upload complete ✔ Importing data...";
+
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            uploadStatus.textContent = "Upload failed ❌";
+        }
+    };
+
+    xhr.send(formData);
+});
+</script>

@@ -15,11 +15,14 @@
         @csrf
 
         <div class="mb-4">
-            <label class="block font-medium text-gray-700">Payee (Company)</label>
-            <select name="company_id"  class="w-full p-2 border rounded" required>
+            <label class="block font-medium text-gray-700">Payee</label>
+            <select id="companySelect" name="company_id"  class="w-full p-2 border rounded" required>
+                <option>Choose Company</option> <!-- For placeholder -->
+                <option value="__create_new__">+ Create New Payee</option>
                 @foreach($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->name }}</option>
                 @endforeach
+                
             </select>
         </div>
 
@@ -36,4 +39,6 @@
         </button>
     </form>
 </div>
+
+
 @endsection

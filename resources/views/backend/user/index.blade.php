@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Check Printing</title>
-    @vite('resources/css/app.css')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+     @vite('resources/css/app.css')
+    <style>
+    .select2-container .select2-selection--single {
+        height: 42px !important;
+        padding: 6px 12px !important;
+        border-radius: 0.375rem !important;
+        border: 1px solid #d1d5db !important; /* Tailwind gray-300 */
+    }
+    </style>
+
 </head>
 <body>
     <div class="dashboard-page">
@@ -36,7 +46,9 @@
 
     </div>
 
-        <script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
@@ -54,6 +66,25 @@
                 }
             });
         });
+        $(document).ready(function () {
+
+             $("#companySelect").select2({
+                placeholder: "Choose Company",
+                width: '100%',
+                allowClear: false,
+                sorter: function(data) {
+                    return data; // prevents Select2 from reordering items
+                }
+            });
+
+            // Detect when user selects the "Create New Company" option
+            $('#companySelect').on('select2:select', function (e) {
+                if (e.params.data.id === "__create_new__") {
+                    window.location.href = "{{ route('user.companies.create') }}";
+                }
+            });
+        });
+
     </script>
 </body>
 </html>

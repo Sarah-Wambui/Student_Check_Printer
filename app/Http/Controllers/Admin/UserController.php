@@ -11,32 +11,47 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::where('role', 'employee')->get();
+        $search = $request->input('search');
+        $city   = $request->input('city');
 
-        // Add remaining deposit to each user
+        $users = User::where('role', 'employee')
+            ->when($search, function ($query) use ($search) {
+                $query->where('time_clock_name', 'like', "%{$search}%")
+                    ->orWhere('legal_first_name', 'like', "%{$search}%")
+                    ->orWhere('legal_last_name', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
+            })
+            ->when($city, function ($query) use ($city) {
+            $query->where('city', $city);
+            })
+            ->paginate(20);
+
         foreach ($users as $user) {
-
-            // Total deposits
             $totalDeposits = Deposit::where('user_id', $user->id)->sum('Total');
+            $totalPrinted  = Check::where('user_id', $user->id)->sum('amount');
 
-            // Total printed checks
-            $totalPrinted = Check::where('user_id', $user->id)->sum('amount');
-
-            // Remaining
             $remaining = $totalDeposits - $totalPrinted;
+            if ($remaining < 0) $remaining = 0;
 
-            if ($remaining < 0) {
-                $remaining = 0;
-            }
-
-            // Attach the value to the user object
             $user->remaining_deposit = $remaining;
         }
 
-        return view('backend.admin.users.index', compact('users'));
+        // If AJAX request → return HTML only
+        if ($request->ajax()) {
+            return response()->json([
+                'rows'       => view('backend.admin.users.index_rows', compact('users'))->render(),
+                'pagination' => $users->appends($request->query())->links()->toHtml(),
+            ]);
+        }
+
+        $cities = User::where('role', 'employee')->pluck('city')->unique()->sort()->values();
+
+        return view('backend.admin.users.index', compact('users', 'search', 'city', 'cities'));
+
     }
+
 
     public function create()
     {
@@ -253,10 +268,10 @@ class UserController extends Controller
         // Suspension
         $user->is_suspended = $request->has('is_suspended') ? true : false;
 
-         // Only update password if provided
-        if ($request->filled('password')) {
-            $user->password = $request->password; // Mutator will hash
-        }
+        //  // Only update password if provided
+        // if ($request->filled('password')) {
+        //     $user->password = $request->password; // Mutator will hash
+        // }
 
         $user->save();
 

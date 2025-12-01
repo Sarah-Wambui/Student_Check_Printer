@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\DepositImportController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\CompanyController as UserCompanyController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/users/import', [ImportController::class, 'import'])->name('users.import');
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
 
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('admin.companies');
@@ -75,8 +77,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/deposits/import', [DepositImportController::class, 'showImportForm'])->name('deposits.import.form');
     Route::post('/deposits/import', [DepositImportController::class, 'importDeposits'])->name('deposits.import');
 
-
+    Route::get('/checks/bulk-create', [AdminCheckController::class, 'bulkCreate'])->name('admin.checks.bulkCreate');
+    Route::post('/checks/bulk-store', [AdminCheckController::class, 'bulkStore'])->name('admin.checks.bulkStore');
+    Route::get('/checks/bulk-print/{ids}', [AdminCheckController::class, 'bulkPrint'])->name('admin.checks.bulkPrint');
     Route::get('/checks/history', [AdminCheckController::class, 'index'])->name('admin.checks.history');
+    Route::delete('/checks/{id}', [AdminCheckController::class, 'destroy'])->name('admin.checks.destroy');
+
 
     Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports');
 
@@ -93,6 +99,9 @@ Route::prefix('user')->middleware(['auth', 'role:employee'])->group(function () 
     Route::get('/checks/history', [UserDashboardController::class, 'history'])->name('user.checks.history');
 
     Route::get('/companies', [UserDashboardController::class, 'companies'])->name('user.companies');
+    Route::get('/companies/create', [UserCompanyController::class, 'create'])->name('user.companies.create');
+    Route::post('/companies', [UserCompanyController::class, 'store'])->name('user.companies.store');
+
     Route::get('/deposits', [UserDashboardController::class, 'deposits'])->name('user.deposits');
     
     Route::get('/print/{check}', [UserCheckController::class, 'printCheck'])->name('user.checks.print');

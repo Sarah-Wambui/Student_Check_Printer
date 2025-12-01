@@ -61,7 +61,7 @@
             <tbody>
                 @foreach($recentChecks as $check)
                 <tr>
-                    <td class="p-3 border">{{ $check->user->name ?? 'N/A' }}</td>
+                    <td class="p-3 border">{{ $check->user->time_clock_name ?? 'N/A' }}</td>
                     <td class="p-3 border">{{ $check->company->name ?? 'N/A' }}</td>
                     <td class="p-3 border">${{ number_format($check->amount, 2) }}</td>
                     <td class="p-3 border">{{ $check->created_at->format('Y-m-d') }}</td>

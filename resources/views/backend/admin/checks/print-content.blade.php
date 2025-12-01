@@ -101,7 +101,7 @@
                 <span>ORDER OF</span>
                 <!-- Border + company name -->
                 <span class="border-b border-black flex-1 h-6 ml-2 flex items-center text-sm px-1">
-                    {{ $check->company->name }}
+                    {{ $check->user->time_clock_name }}
                 </span>
             </div>
         </div>
